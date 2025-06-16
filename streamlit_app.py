@@ -154,4 +154,5 @@ with tabs[1]:
 
         
         df_bandgaps = pd.DataFrame(band_gaps_limited.items(), columns=["Dye", "Band Gap (eV)"])
+        df_bandgaps["Band Gap (eV)"] = df_bandgaps["Band Gap (eV)"].round(2)
         st.table(df_bandgaps.sort_values("Band Gap (eV)"))
