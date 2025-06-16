@@ -152,5 +152,6 @@ with tabs[1]:
                 Eg = -intercept / slope
                 band_gaps_limited[dye] = round(Eg, 2)
 
+        
         df_bandgaps = pd.DataFrame(band_gaps_limited.items(), columns=["Dye", "Band Gap (eV)"])
         st.table(df_bandgaps.sort_values("Band Gap (eV)"))
