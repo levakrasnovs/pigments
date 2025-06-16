@@ -116,7 +116,7 @@ with tabs[1]:
             title="Kubelka-Munk F(R) vs Energy (eV)"
         )
         filtered = df_long[df_long["Energy (eV)"] <= 3]
-        y_max = filtered["F(R)"].quantile(0.999)
+        y_max = filtered["F(R)"].quantile(1)
         fig.update_layout(
             xaxis=dict(range=[1.3, 3]),
             yaxis=dict(range=[0, y_max])
@@ -165,4 +165,4 @@ with tabs[1]:
 #                     band_gaps_limited[dye] = round(Eg, 2)
 
 #         df_bandgaps = pd.DataFrame(band_gaps.items(), columns=["Dye", "Band Gap (eV)"])
-# st.table(df_bandgaps.sort_values("Band Gap (eV)"))
+#   st.table(df_bandgaps.sort_values("Band Gap (eV)"))
