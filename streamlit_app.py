@@ -101,7 +101,7 @@ with tabs[1]:
             F_R_d = ((1 - R_d) ** 2) / (2 * R_d)
             Energy = wavelength_to_eV(df_cleaned[f"Wavelength_{dye}"])
             temp = pd.DataFrame({
-                "Energy": Energy,
+                "Energy (eV)": Energy,
                 "F(R)": F_R_d,
                 "Dye": dye
             })
