@@ -4,12 +4,17 @@ import os
 import numpy as np
 import streamlit as st
 import matplotlib.pyplot as plt
+import plotly.express as px
 
 if "visibility" not in st.session_state:
     st.session_state.visibility = "visible"
     st.session_state.disabled = False
 
 st.set_page_config(page_title='База пигментов', layout="wide")
+
+# Функция пересчета длины волны в энергию
+def wavelength_to_eV(wavelength_nm):
+    return 1239.84193 / wavelength_nm
 
 df = pd.read_csv('pigments.csv')
 compound_names = df['Name'].unique().tolist()
@@ -69,8 +74,47 @@ with tabs[0]:
 
             # col2result.markdown(f'CAS link: **https://commonchemistry.cas.org/detail?cas_rn={cas}**')
 with tabs[1]:
-    st.title("Upload CSV-файл")
+    st.title("Upload CSV file")
     uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
     if uploaded_file is not None:
         df_band_gap = pd.read_csv(uploaded_file)
         st.write(df_band_gap)
+    df_band_gap = df.iloc[:, :-1]
+    df_cleaned = df_band_gap.iloc[1:].reset_index(drop=True)
+
+    columns_renamed = {
+        col: f'Wavelength_{col}' if 'Unnamed' not in col else f'%R_{df_cleaned.columns[i-1]}'
+        for i, col in enumerate(df_cleaned.columns)
+    }
+
+    df_cleaned = df_cleaned.rename(columns=columns_renamed)
+    # Преобразование всех значений в числовой формат
+    for col in df_cleaned.columns:
+        df_cleaned[col] = pd.to_numeric(df_cleaned[col], errors='coerce')
+
+    # Извлечение имен красителей
+    dye_names = [col.replace('%R_', '') for col in df_cleaned.columns if col.startswith('%R_')]
+    df_long = pd.DataFrame()
+
+    for dye in dye_names:
+        R_d = df_cleaned[f"%R_{dye}"] / 100
+        F_R_d = ((1 - R_d) ** 2) / (2 * R_d)
+        Energy = wavelength_to_eV(df_cleaned[f"Wavelength_{dye}"])
+        temp = pd.DataFrame({
+            "Energy": Energy,
+            "F(R)": F_R_d,
+            "Dye": dye
+        })
+        df_long = pd.concat([df_long, temp], ignore_index=True)
+
+    # Построение графика
+    fig = px.line(
+        df_long,
+        x="Energy",
+        y="F(R)",
+        color="Dye",
+        title="Kubelka-Munk F(R) vs Energy (Plotly Express)"
+    )
+    fig.update_layout(xaxis=dict(range=[0, 3]))
+
+    st.plotly_chart(fig)
