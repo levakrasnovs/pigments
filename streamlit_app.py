@@ -110,11 +110,12 @@ with tabs[1]:
         # Построение графика
         fig = px.line(
             df_long,
-            x="Energy",
+            x="Energy (eV)",
             y="F(R)",
             color="Dye",
-            title="Kubelka-Munk F(R) vs Energy (Plotly Express)"
+            title="Kubelka-Munk F(R) vs Energy (eV)"
         )
-        # fig.update_layout(xaxis=dict(range=[1.3, 3]))
+        y_max = df_long["F(R)"].quantile(0.995)  # или .max() * 1.1
+        fig.update_layout(xaxis=dict(range=[1.3, 3]), yaxis=dict(range=[0, y_max]))
 
         st.plotly_chart(fig)
