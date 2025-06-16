@@ -115,11 +115,11 @@ with tabs[1]:
             color="Dye",
             title="Kubelka-Munk F(R) vs Energy (eV)"
         )
-        filtered = df_long[df_long["Energy (eV)"] <= 3]
-        y_max = filtered["F(R)"].quantile(0.995)
-        fig.update_layout(
-            xaxis=dict(range=[1.3, 3]),
-            yaxis=dict(range=[0, y_max])
-        )
+        # filtered = df_long[df_long["Energy (eV)"] <= 3]
+        # y_max = filtered["F(R)"].quantile(0.995)
+        # fig.update_layout(
+        #     xaxis=dict(range=[1.3, 3]),
+        #     yaxis=dict(range=[0, y_max])
+        # )
 
         st.plotly_chart(fig)
