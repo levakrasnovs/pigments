@@ -115,11 +115,49 @@ with tabs[1]:
             color="Dye",
             title="Kubelka-Munk F(R) vs Energy (eV)"
         )
-        # filtered = df_long[df_long["Energy (eV)"] <= 3]
-        # y_max = filtered["F(R)"].quantile(0.995)
-        # fig.update_layout(
-        #     xaxis=dict(range=[1.3, 3]),
-        #     yaxis=dict(range=[0, y_max])
-        # )
 
         st.plotly_chart(fig)
+
+        #Расчет ширины запрещенной зоны
+        band_gaps_limited = {}
+
+        for dye in dye_names:
+            energy_col = f'Energy_{dye}'
+            F_col = f'F_{dye}'
+            if energy_col in df_F.columns and F_col in df_F.columns:
+                energy = df_F[energy_col].values
+                F = df_F[F_col].values
+
+                # Убираем NaN и выбросы
+                mask = (~pd.isna(energy)) & (~pd.isna(F)) & (energy <= 3)
+                energy = energy[mask]
+                F = F[mask]
+
+                if len(energy) < 10:
+                    continue
+
+                # Вычисляем численный градиент
+                gradient = abs(pd.Series(F).diff().fillna(0).values)
+
+                # Находим максимум градиента
+                max_grad_idx = gradient.argmax()
+
+                # Линейная аппроксимация на 5 точках около максимального градиента
+                i1 = max(max_grad_idx - 2, 0)
+                i2 = min(max_grad_idx + 3, len(energy))
+                x_fit = energy[i1:i2]
+                y_fit = F[i1:i2]
+
+                if len(x_fit) < 2:
+                    continue
+
+                # Аппроксимация прямой: y = slope * x + intercept
+                slope = pd.Series(x_fit).cov(pd.Series(y_fit)) / pd.Series(x_fit).var()
+                intercept = pd.Series(y_fit).mean() - slope * pd.Series(x_fit).mean()
+
+                if slope != 0:
+                    Eg = -intercept / slope
+                    band_gaps_limited[dye] = round(Eg, 2)
+
+        df_bandgaps = pd.DataFrame(band_gaps_limited.items(), columns=["Dye", "Band Gap (eV)"])
+        st.table(df_bandgaps.sort_values("Band Gap (eV)"))
