@@ -115,6 +115,6 @@ with tabs[1]:
             color="Dye",
             title="Kubelka-Munk F(R) vs Energy (Plotly Express)"
         )
-        fig.update_layout(xaxis=dict(range=[0, 3]))
+        # fig.update_layout(xaxis=dict(range=[1.3, 3]))
 
         st.plotly_chart(fig)
