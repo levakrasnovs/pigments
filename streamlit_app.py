@@ -18,7 +18,7 @@ st.markdown(f"""
 # База пигментов
 """)
 
-tabs = st.tabs(["Explore"])
+tabs = st.tabs(["Explore", "Band Gap"])
 
 with tabs[0]:
 
@@ -68,3 +68,9 @@ with tabs[0]:
             col2result.image(f'РЭМ/{selected}.jpg')
 
             # col2result.markdown(f'CAS link: **https://commonchemistry.cas.org/detail?cas_rn={cas}**')
+with tabs[1]:
+    st.title("Upload CSV-файл")
+    uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
+    if uploaded_file is not None:
+        df_band_gap = pd.read_csv(uploaded_file)
+        st.write(df_band_gap)
