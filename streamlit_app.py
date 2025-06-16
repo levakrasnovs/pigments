@@ -116,7 +116,7 @@ with tabs[1]:
             title="Kubelka-Munk F(R) vs Energy (eV)"
         )
         filtered = df_long[df_long["Energy (eV)"] <= 3]
-        y_max = filtered["F(R)"].quantile(1)
+        y_max = filtered["F(R)"].max()
         fig.update_layout(
             xaxis=dict(range=[1.3, 3]),
             yaxis=dict(range=[0, y_max])
