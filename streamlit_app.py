@@ -79,42 +79,42 @@ with tabs[1]:
     if uploaded_file is not None:
         df_band_gap = pd.read_csv(uploaded_file)
         st.write(df_band_gap)
-    df_band_gap = df.iloc[:, :-1]
-    df_cleaned = df_band_gap.iloc[1:].reset_index(drop=True)
+        df_band_gap = df_band_gap.iloc[:, :-1]
+        df_cleaned = df_band_gap.iloc[1:].reset_index(drop=True)
 
-    columns_renamed = {
-        col: f'Wavelength_{col}' if 'Unnamed' not in col else f'%R_{df_cleaned.columns[i-1]}'
-        for i, col in enumerate(df_cleaned.columns)
-    }
+        columns_renamed = {
+            col: f'Wavelength_{col}' if 'Unnamed' not in col else f'%R_{df_cleaned.columns[i-1]}'
+            for i, col in enumerate(df_cleaned.columns)
+        }
 
-    df_cleaned = df_cleaned.rename(columns=columns_renamed)
-    # Преобразование всех значений в числовой формат
-    for col in df_cleaned.columns:
-        df_cleaned[col] = pd.to_numeric(df_cleaned[col], errors='coerce')
+        df_cleaned = df_cleaned.rename(columns=columns_renamed)
+        # Преобразование всех значений в числовой формат
+        for col in df_cleaned.columns:
+            df_cleaned[col] = pd.to_numeric(df_cleaned[col], errors='coerce')
 
-    # Извлечение имен красителей
-    dye_names = [col.replace('%R_', '') for col in df_cleaned.columns if col.startswith('%R_')]
-    df_long = pd.DataFrame()
+        # Извлечение имен красителей
+        dye_names = [col.replace('%R_', '') for col in df_cleaned.columns if col.startswith('%R_')]
+        df_long = pd.DataFrame()
 
-    for dye in dye_names:
-        R_d = df_cleaned[f"%R_{dye}"] / 100
-        F_R_d = ((1 - R_d) ** 2) / (2 * R_d)
-        Energy = wavelength_to_eV(df_cleaned[f"Wavelength_{dye}"])
-        temp = pd.DataFrame({
-            "Energy": Energy,
-            "F(R)": F_R_d,
-            "Dye": dye
-        })
-        df_long = pd.concat([df_long, temp], ignore_index=True)
+        for dye in dye_names:
+            R_d = df_cleaned[f"%R_{dye}"] / 100
+            F_R_d = ((1 - R_d) ** 2) / (2 * R_d)
+            Energy = wavelength_to_eV(df_cleaned[f"Wavelength_{dye}"])
+            temp = pd.DataFrame({
+                "Energy": Energy,
+                "F(R)": F_R_d,
+                "Dye": dye
+            })
+            df_long = pd.concat([df_long, temp], ignore_index=True)
 
-    # Построение графика
-    fig = px.line(
-        df_long,
-        x="Energy",
-        y="F(R)",
-        color="Dye",
-        title="Kubelka-Munk F(R) vs Energy (Plotly Express)"
-    )
-    fig.update_layout(xaxis=dict(range=[0, 3]))
+        # Построение графика
+        fig = px.line(
+            df_long,
+            x="Energy",
+            y="F(R)",
+            color="Dye",
+            title="Kubelka-Munk F(R) vs Energy (Plotly Express)"
+        )
+        fig.update_layout(xaxis=dict(range=[0, 3]))
 
-    st.plotly_chart(fig)
+        st.plotly_chart(fig)
