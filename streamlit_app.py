@@ -126,7 +126,7 @@ with tabs[1]:
 
         band_gaps_limited = {}
 
-        for dye, group in df_long[df_long["Energy ()"] <= 3].groupby("Dye"):
+        for dye, group in df_long[df_long["Energy (eV)"] <= 3].groupby("Dye"):
             energy = group["Energy (eV)"].values
             F = group["F(R)"].values
 
