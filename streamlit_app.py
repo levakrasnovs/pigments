@@ -123,6 +123,7 @@ with tabs[1]:
         )
 
         st.plotly_chart(fig)
+        st.dataframe(df_long)
 
         band_gaps_limited = {}
 
